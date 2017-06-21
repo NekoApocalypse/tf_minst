@@ -111,5 +111,3 @@ def evaluation(logits, labels):
     # in_top_k(predictions, labels, k) op: return if the label is in top k predictions.
     correct = tf.nn.in_top_k(logits, labels, 1)
     return tf.reduce_sum(tf.cast(correct, tf.int32)
-
-
