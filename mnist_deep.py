@@ -31,15 +31,15 @@ def deepnn(x):
     # Second convolutional layer --maps 32 feature maps to 64
     W_conv2 = weight_variable([5,5,32,64])
     b_conv2 = bias_variable([64])
-    h_conv2 = tf.nn.relu(conv2d(h_poo1, W_conv2) + b_conv2)
+    h_conv2 = tf.nn.relu(conv2d(h_pool1, W_conv2) + b_conv2)
 
     h_pool2 = max_pool_2x2(h_conv2)
 
     # Fully Connected layer 1
-    W_fc1 = weight_varialbe([7*7*64,1024])
+    W_fc1 = weight_variable([7*7*64,1024])
     b_fc1 = bias_variable([1024])
 
-    h_pool2_flat = tf.reshape(h_pool2,-1,7*7*64])
+    h_pool2_flat = tf.reshape(h_pool2,[-1,7*7*64])
     h_fc1 = tf.nn.relu(tf.matmul(h_pool2_flat, W_fc1) + b_fc1)
 
     # Dropout
@@ -79,7 +79,7 @@ def main(_):
     xentropy = tf.reduce_mean(
             tf.nn.softmax_cross_entropy_with_logits(labels=y_,logits=y_conv))
     train_step = tf.train.AdamOptimizer(1e-4).minimize(xentropy)
-    correct_prediction = tf.equal(tf.argmax(y_conv,1), tr.argmax(y_,1))
+    correct_prediction = tf.equal(tf.argmax(y_conv,1), tf.argmax(y_,1))
     accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
     with tf.Session() as sess:
@@ -90,7 +90,7 @@ def main(_):
                 train_accuracy = accuracy.eval(feed_dict={
                     x:batch[0], y_:batch[1], keep_prob:1.0})
                 print('step %d, training accuracy %g' % (i,train_accuracy))
-            train_setp.run(feed_dict({x: batch[0], y_: batch[1], keep_prob:0.5})
+            train_step.run(feed_dict={x: batch[0], y_: batch[1], keep_prob:0.5})
             
         print('test accuracy %g' % accuracy.eval(feed_dict={
             x: mnist.test.images, y_: mnist.test.labels, keep_prob: 1.0}))
